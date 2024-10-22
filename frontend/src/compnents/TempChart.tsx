@@ -8,7 +8,6 @@ import {
 	Title,
 	Tooltip,
 	Legend,
-	ChartOptions,
 } from "chart.js";
 
 ChartJS.register(
@@ -38,41 +37,18 @@ interface TempChartProps {
 	city: "Delhi" | "Mumbai" | "Chennai" | "Bangalore" | "Kolkata" | "Hyderabad";
 	unit: "Celsius" | "Fahrenheit" | "Kelvin";
 }
-const data = {
-	labels: ["Monday", "tuesday"],
-	datasets: [
-		{
-			label: "Steps",
-			data: [500, 600],
-		},
-	],
-};
+interface datasets {
+	label: string;
+	data: number[];
+}
+interface data {
+	labels: string[];
+	datasets: datasets[];
+}
+
 export default function TempChart(props: TempChartProps) {
-	const options: ChartOptions<"line"> = {
-		scales: {
-			x: {
-				type: "time",
-				time: {
-					unit: "minute",
-					tooltipFormat: "ll HH:mm",
-					displayFormats: {
-						minute: "HH:mm",
-					},
-				},
-				title: {
-					display: true,
-					text: "Time (IST)",
-				},
-			},
-			y: {
-				title: {
-					display: true,
-					text: "Temperature (°C)",
-				},
-			},
-		},
-	};
-	const [dataData, setData] = useState(data);
+	const options = {};
+	const [dataData, setData] = useState<data>({ labels: [], datasets: [] });
 	useEffect(() => {
 		const fetchTemprature = async () => {
 			try {
@@ -100,9 +76,13 @@ export default function TempChart(props: TempChartProps) {
 							{
 								...prv.datasets[0],
 								label: props.city,
-								data: weatherDataBackendFiltered.map(
-									(weatherDataBackend) => weatherDataBackend.temp
-								),
+								data: weatherDataBackendFiltered.map((weatherDataBackend) => {
+									return props.unit == "Kelvin"
+										? weatherDataBackend.temp
+										: props.unit == "Celsius"
+										? weatherDataBackend.temp - 273.15
+										: ((weatherDataBackend.temp - 273.15) * 9) / 5 + 32;
+								}),
 							},
 						],
 					};

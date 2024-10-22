@@ -1,4 +1,4 @@
-const { Sequelize } = require("sequelize");
+const { Sequelize, DataTypes } = require("sequelize");
 
 const sequelize = new Sequelize({
 	dialect: "sqlite",
@@ -14,16 +14,56 @@ async function testDatabaseConnection() {
 	}
 }
 
-sequelize.define("time5min", {});
+const User = sequelize.define("User", {
+	id: {
+		type: DataTypes.INTEGER,
+		primaryKey: true,
+		autoIncrement: true,
+	},
+	email: {
+		type: DataTypes.TEXT,
+		allowNull: false,
+		unique: true,
+	},
+	password: {
+		type: DataTypes.TEXT,
+		allowNull: false,
+	},
+});
 
-sequelize.define("timeDaily", {});
+const Alert = sequelize.define("Alert", {
+	id: {
+		type: DataTypes.INTEGER,
+		primaryKey: true,
+		autoIncrement: true,
+	},
+	city: {
+		type: DataTypes.TEXT,
+		allowNull: false,
+	},
+	alertTemp: {
+		type: DataTypes.INTEGER,
+		allowNull: false,
+	},
+	message: {
+		type: DataTypes.TEXT,
+		allowNull: false,
+	},
+    greater:{
+        type: DataTypes.BOOLEAN,
+		allowNull: false,
+    }
+});
+
+User.hasMany(Alert);
+Alert.belongsTo(User);
 
 testDatabaseConnection()
 	.then(() => {
 		console.log("connection succesfull");
+		// return sequelize.sync({ force: true });
+		// return sequelize.sync({alter: true });
 		return sequelize.sync();
-		// return sequelize.sync();
-		// return sequelize.sync();
 	})
 	.then(() => {
 		console.log("database is in sync");
@@ -31,3 +71,6 @@ testDatabaseConnection()
 	.catch((err) => {
 		throw new Error("database down");
 	});
+
+exports.Alert = Alert;
+exports.User = User;

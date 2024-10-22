@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 
 import api from "../util/api-client";
 import TempChart from "./TempChart";
+import { useLocation } from "react-router-dom";
+import Alert from "./Alert";
 
 interface CityWeather {
 	main: string | undefined;
@@ -71,10 +73,10 @@ export default function WeatherCard() {
 			} catch (error) {}
 		};
 		fetchTemprature();
-		// const interval = setInterval(fetchTemprature, 6000);
-		// return () => {
-		// 	clearInterval(interval);
-		// };
+		const interval = setInterval(fetchTemprature, 6000);
+		return () => {
+			clearInterval(interval);
+		};
 	}, []);
 	const tempUnits = ["Kelvin", "Celsius", "Fahrenheit"];
 	const cities = [
@@ -92,6 +94,7 @@ export default function WeatherCard() {
 	const toFahrenheit = (tempInKelvin: number): number => {
 		return (tempInKelvin - 273.15) * (9 / 5) + 32; // Convert Kelvin to Fahrenheit
 	};
+	const location = useLocation();
 	return (
 		<>
 			<div
@@ -179,11 +182,15 @@ export default function WeatherCard() {
 			<div>
 				<TempChart city={city} unit={tempUnit} />
 			</div>
-			<div style={{ margin: "1rem" }}>
-				<div style={{ background: "rgba(175, 175,0, 0.4)" }}>
-					Alert Temprature too high
+			{location.pathname == "/authentcated" && (
+				<div style={{ margin: "1rem" }}>
+					<div
+						style={{ background: "rgba(175, 175,0, 0.4)", minWidth: "100%" }}
+					>
+						<Alert />
+					</div>
 				</div>
-			</div>
+			)}
 		</>
 	);
 }

@@ -64,7 +64,6 @@ const daysData = db.prepare(`
         FROM weather5
         WHERE time >= strftime('%s', 'now', '-24 hours')
     `);
-
 exports.insertInto5minTable = async function insertInto5minTable() {
 	await syncWeather();
 	const currentTemperature = getCurrentTemperature();
@@ -102,5 +101,6 @@ exports.insertIntoDayTable = async function insertIntoDayTable() {
 exports.getDaysWeatherData = async () => {
 	return daysData.all();
 };
+
 
 exports.getDB = () => db;
